@@ -8,16 +8,42 @@ import albumRoutes from "./routes/album.route.js";
 import statsRoutes from "./routes/stat.route.js";
 import { connectDB } from "./lib/db.js";
 import { clerkMiddleware } from "@clerk/express";
-
+import fileUpload from "express-fileupload";
+import path from "path";
 dotenv.config();
 
 const app = express();
 // port
+const __dirname = path.resolve();
 const PORT = process.env.PORT || 3000;
 
 // middleware
 app.use(express.json());
 app.use(clerkMiddleware()); //this will add auth to req obj => reg.auth.userId
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: path.join(__dirname, "tmp"),
+    createParentPath: true,
+    limits: {
+      fileSize: 10 * 1024 * 1024,
+    },
+    //abortOnLimit: true,
+  })
+);
+
+// ERROR MIDDLEWARE
+app.use((err, req, res, next) => {
+  console.log(err);
+  return res.status(500).json({
+    success: false,
+    message:
+      process.env.NODE_ENV === "production"
+        ? "Internal server error"
+        : err.message,
+  });
+});
+
 // routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
