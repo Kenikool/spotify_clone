@@ -1,12 +1,10 @@
 import { Router } from "express";
-
 const router = Router();
 
-router.get("/", (req, res) => {
+router.post("/", (req, res) => {
   res.send("Admin");
 });
-
-router.get("/dashboard", (req, res) => {
+router.delete("/", (req, res) => {
   res.send("Admin");
 });
 

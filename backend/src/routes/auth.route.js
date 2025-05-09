@@ -1,17 +1,29 @@
 import { Router } from "express";
-
+import { User } from "../model/user.model.js";
 const router = Router();
 
-router.get("/", (req, res) => {
-  res.send("Auth");
-});
+router.post("/callback", async (req, res) => {
+  try {
+    const { id, firstName, lastName, imageUrl } = req.body;
+    // check if user already exist
+    const user = await User.findOne({ clerkId: id });
+    if (!user) {
+      // signup
+      await User.create({
+        clearkId: id,
+        fullName: `${firstName} ${lastName}`,
+        imageUrl,
+      });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "User created successfully" });
+  } catch (error) {
+    console.log(error);
+    console.log("error in auth callback", error);
 
-router.get("/login", (req, res) => {
-  res.send("Auth");
-});
-
-router.get("/logout", (req, res) => {
-  res.send("Auth");
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
 });
 
 export default router;
