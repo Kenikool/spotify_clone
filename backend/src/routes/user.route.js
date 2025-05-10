@@ -1,17 +1,9 @@
-import express from "express";
+import { Router } from "express";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import { getAllUsers, getMessages } from "../controller/user.controller.js";
+const router = Router();
 
-const router = express.Router();
-
-router.get("/signup", (req, res) => {
-  res.send("User");
-});
-
-router.get("/login", (req, res) => {
-  res.send("User");
-});
-
-router.get("/logout", (req, res) => {
-  res.send("User");
-});
+router.get("/", protectRoute, getAllUsers);
+router.get("/messages/:userId", protectRoute, getMessages);
 
 export default router;
